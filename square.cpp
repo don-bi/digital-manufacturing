@@ -73,6 +73,10 @@ std::string t_slot(float x, float y, float angle_deg) {
 int main(int argc, char** argv) {
     float width, length, height;
 
+    // ==========================================
+    // User Inputs
+    // ==========================================
+
     while (true) {
         cout << "What should the width of the box be? (in)\n";
         if (cin >> width && width > 0 && width <= 100) break;
@@ -91,6 +95,7 @@ int main(int argc, char** argv) {
         cout << "Error: Invalid height.\n";
         cin.clear(); cin.ignore(1000, '\n'); // Clear buffer on bad input
     }
+    height -= ACRYLIC_THICKNESS;
 
     const float available_space = length - ACRYLIC_THICKNESS*2;
     const float min_section_thickness = 0.5 + ACRYLIC_THICKNESS; //0.5 + dividerlen
@@ -134,6 +139,35 @@ int main(int argc, char** argv) {
     }
     cout << "\n";
 
+    char do_text;
+    while (true) {
+        cout << "Do you want text to be engraved on the base? (y/n)\n";
+        if (cin >> do_text && (do_text == 'y' || do_text == 'n')) break;
+        cout << "Error: Invalid input.\n";
+        cin.clear(); cin.ignore(1000, '\n');
+    }
+    string base_text;
+    while (do_text == 'y') {
+        cout << "What should the text be? (max 20 characters)\n";
+        if (cin >> base_text) break;
+        cout << "Error: Invalid input.\n";
+        cin.clear(); cin.ignore(1000, '\n');
+    }
+
+    while (true) {
+        cout << "Do you want text to be engraved on the sides (length-side wall)? (y/n)\n";
+        if (cin >> do_text && (do_text == 'y' || do_text == 'n')) break;
+        cout << "Error: Invalid input.\n";
+        cin.clear(); cin.ignore(1000, '\n');
+    }
+    string length_text;
+    while (do_text == 'y') {
+        cout << "What should the text be? (max 20 characters)\n";
+        if (cin >> length_text) break;
+        cout << "Error: Invalid input.\n";
+        cin.clear(); cin.ignore(1000, '\n');
+    }
+
     // ==========================================
     // FILE 1: Base (Rectangle)
     // ==========================================
@@ -161,7 +195,6 @@ int main(int argc, char** argv) {
     for (int i = 0; i < num_screws; i++) {
         base_svg += screw_hole(interval_inc * (i+1), HALF_ACRYLIC_THICKNESS);
         base_svg += screw_hole(interval_inc * (i+1), length - HALF_ACRYLIC_THICKNESS);
-        base_svg += t_slot(interval_inc * (i+1), length, 0);
     }
 
     // for y
@@ -170,7 +203,6 @@ int main(int argc, char** argv) {
     for (int i = 0; i < num_screws; i++) {
         base_svg += screw_hole(HALF_ACRYLIC_THICKNESS, interval_inc * (i+1));
         base_svg += screw_hole(width - HALF_ACRYLIC_THICKNESS, interval_inc * (i+1));
-        base_svg += t_slot(0, interval_inc * (i+1), 90);
     }
 
     base_svg += "</svg>";
@@ -199,6 +231,12 @@ int main(int argc, char** argv) {
     l_wall_svg += screw_hole(HALF_ACRYLIC_THICKNESS, height / 2);
     l_wall_svg += screw_hole(length - HALF_ACRYLIC_THICKNESS, height / 2);
 
+    float offset = ACRYLIC_THICKNESS;
+    for (int i = 0; i < num_sections-1; i ++) {
+        l_wall_svg += screw_hole(offset + section_lens[i] + HALF_ACRYLIC_THICKNESS, height / 2);
+        offset += section_lens[i] + ACRYLIC_THICKNESS;
+    }
+
     num_screws = length / 3;
     interval_inc = length / (num_screws + 1.0);
     for (int i = 0; i < num_screws; i++) {
@@ -210,7 +248,7 @@ int main(int argc, char** argv) {
     l_wall.close();
 
     // ==========================================
-    // FILE 2: Width Wall
+    // FILE 3: Width Wall
     // ==========================================
     ofstream w_wall("w_wall.svg", ios::binary);
 
@@ -234,12 +272,33 @@ int main(int argc, char** argv) {
     for (int i = 0; i < num_screws; i++) {
         w_wall_svg += t_slot(interval_inc * (i+1) - ACRYLIC_THICKNESS, height, 0);
     }
-
-
     w_wall_svg += "</svg>";
 
     w_wall << w_wall_svg;
     w_wall.close();
+
+    // ==========================================
+    // FILE 4: Divider Wall
+    // ==========================================
+    ofstream d_wall("d_wall.svg", ios::binary);
+
+    string d_wall_svg = format(R"(<?xml version="1.0" encoding="UTF-8" ?>
+    <svg xmlns="http://www.w3.org/2000/svg" version="1.1" 
+        width="{0}in" height="{1}in" viewBox="0 0 {0} {1}">
+        <rect x="0" y="0" width="{0}" height="{1}"
+            fill="none" 
+            stroke="white"
+            stroke-width="1px" 
+            vector-effect="non-scaling-stroke"
+        />
+    )", width-ACRYLIC_THICKNESS*2, height);
+
+    d_wall_svg += t_slot(0, height / 2, 90);
+    d_wall_svg += t_slot(width-ACRYLIC_THICKNESS*2, height / 2, 270);
+    d_wall_svg += "</svg>";
+
+    d_wall << d_wall_svg;
+    d_wall.close();
 
     cout << "Files generated\n";
     return 0;
