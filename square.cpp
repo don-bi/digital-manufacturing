@@ -2,6 +2,7 @@
 #include <fstream>
 #include <format>
 #include <string>
+#include <vector>
 
 using namespace std;
 
@@ -16,7 +17,7 @@ string screw_hole(float x, float y) {
     <circle cx="{0}" cy="{1}" 
         r="0.043" 
         fill="none"
-        stroke="black"
+        stroke="white"
         stroke-width="1px" 
         vector-effect="non-scaling-stroke"
     />
@@ -24,27 +25,46 @@ string screw_hole(float x, float y) {
     return hole_str;
 }
 
+std::string t_slot(float x, float y, float angle_deg) {
+    const float screw_r = SCREW_RADIUS; // screw half-width
+    const float nut_r = 0.1f; // nut half-width (0.2 / 2)
+    
+    // Y-coordinates relative to y center
+    const float y_top_screw = -0.25f;
+    const float y_top_nut   = -0.16f;
+    const float y_bot_nut   = -0.09f;
+    const float y_bot_screw = 0.0f;
+    
+    std::string path_data = std::format(
+        "M {0} {2} "  // Top-Left Screw (x-r, y_top)
+        "L {1} {2} "  // Top-Right Screw (x+r, y_top)
+        "L {1} {3} "  // to Nut Top edge
+        "L {4} {3} "  // Nut Right edge
+        "L {4} {5} "  // Nut Bottom edge
+        "L {1} {5} "  // Screw edge
+        "L {1} {6} "  // ottom Screw
+        "L {0} {6} "  // Bottom-Left Screw
+        "L {0} {5} "  // Nut Bottom edge
+        "L {7} {5} "  // Nut Left edge
+        "L {7} {3} "  // Nut Top edge
+        "L {0} {3} "  // Screw edge
+        "Z",          // Close path
+        x - screw_r,  // {0} Left Screw X
+        x + screw_r,  // {1} Right Screw X
+        y + y_top_screw, // {2} Top Screw Y
+        y + y_top_nut,   // {3} Top Nut Y
+        x + nut_r,       // {4} Right Nut X
+        y + y_bot_nut,   // {5} Bottom Nut Y
+        y + y_bot_screw, // {6} Bottom Screw Y
+        x - nut_r        // {7} Left Nut X
+    );
 
-// coordinates will be the center of the slot
-string t_slot(float x, float y, float angle_deg) {
-    string slot_str = format(" <g transform=\"rotate({2} {0} {1})\"> ", x, y, angle_deg);
-    slot_str += format(R"(
-    <rect x="{0}" y="{1}" width="{2}" height="{3}"
-        fill="none" 
-        stroke="black"
-        stroke-width="1px" 
-        vector-effect="non-scaling-stroke"
-    />
-    )", x-SCREW_RADIUS, y-0.25, SCREW_DIAMETER, 0.25);
-    slot_str += format(R"(
-    <rect x="{0}" y="{1}" width="{2}" height="{3}"
-        fill="none" 
-        stroke="black"
-        stroke-width="1px" 
-        vector-effect="non-scaling-stroke"
-    />
-    )", x-0.1, y-0.16, 0.2, 0.07);
-    slot_str += "</g>";
+    //rotation wrap
+    std::string slot_str = std::format(
+        "<g transform=\"rotate({2} {0} {1})\"><path d=\"{3}\" fill=\"none\" stroke=\"white\" stroke-width=\"1px\" vector-effect=\"non-scaling-stroke\" /></g>", 
+        x, y, angle_deg, path_data
+    );
+
     return slot_str;
 }
 
@@ -72,6 +92,48 @@ int main(int argc, char** argv) {
         cin.clear(); cin.ignore(1000, '\n'); // Clear buffer on bad input
     }
 
+    const float available_space = length - ACRYLIC_THICKNESS*2;
+    const float min_section_thickness = 0.5 + ACRYLIC_THICKNESS; //0.5 + dividerlen
+    int num_sections;
+
+    while (true) {
+        cout << "How many sections do you want?\n";
+        if (cin >> num_sections && num_sections <= available_space / min_section_thickness) break;
+        cout << "Error: Too many sections for this container.\n";
+        cin.clear(); cin.ignore(1000, '\n'); // Clear buffer on bad input
+    }
+
+    vector<float> section_lens;
+    bool continue_prompt = true;
+    float remaining_space = available_space;
+    while (continue_prompt) {
+        cout << "You will choose the length of each section now. It will add a 0.125in divider after each of your section's provided length. The minimum section length is 0.5 inches\n";
+        continue_prompt = false;
+        for (int i = 0; i < num_sections-1; i ++) {
+            if (remaining_space < min_section_thickness) {
+                cout << "Error: Not enough space for minimum section length.";
+                continue_prompt = true;
+                break;
+            }
+            float curr_sec_len;
+            while (true) {
+                cout << format("What should the length of section {} be? (in) [Remaining Space: {}]\n", i+1, remaining_space);
+                if (cin >> curr_sec_len && curr_sec_len + ACRYLIC_THICKNESS + 0.5 <= remaining_space) break; // the input is good
+                cout << "Error: Selected section length is too large.";
+                cin.clear(); cin.ignore(1000, '\n'); // Clear buffer on bad input
+            }
+            remaining_space -= curr_sec_len + ACRYLIC_THICKNESS;
+            section_lens.push_back(curr_sec_len);
+        }
+    }
+    section_lens.push_back(remaining_space);
+
+    cout << "Successfully created section lengths of:\n";
+    for (float& f : section_lens) {
+        cout << f << "in ";
+    }
+    cout << "\n";
+
     // ==========================================
     // FILE 1: Base (Rectangle)
     // ==========================================
@@ -82,7 +144,7 @@ int main(int argc, char** argv) {
         width="{0}in" height="{1}in" viewBox="0 0 {0} {1}">
         <rect x="0" y="0" width="{0}" height="{1}"
             fill="none" 
-            stroke="black"
+            stroke="white"
             stroke-width="1px" 
             vector-effect="non-scaling-stroke"
         />
@@ -126,7 +188,7 @@ int main(int argc, char** argv) {
         width="{0}in" height="{1}in" viewBox="0 0 {0} {1}">
         <rect x="0" y="0" width="{0}" height="{1}"
             fill="none" 
-            stroke="black"
+            stroke="white"
             stroke-width="1px" 
             vector-effect="non-scaling-stroke"
         />
@@ -157,7 +219,7 @@ int main(int argc, char** argv) {
         width="{0}in" height="{1}in" viewBox="0 0 {0} {1}">
         <rect x="0" y="0" width="{0}" height="{1}"
             fill="none" 
-            stroke="black"
+            stroke="white"
             stroke-width="1px" 
             vector-effect="non-scaling-stroke"
         />
