@@ -1,15 +1,15 @@
-<?xml version="1.0" encoding="UTF-8" ?><svg xmlns="http://www.w3.org/2000/svg" width="6in" height="2.875in" viewBox="0 0 6 2.875"><rect x="0" y="0" width="6" height="2.875" fill="none" stroke="green" stroke-width="1px" vector-effect="non-scaling-stroke" />
-    <text x="3" y="1.4375" 
-            transform="rotate(0 3 1.4375)"
+<?xml version="1.0" encoding="UTF-8" ?><svg xmlns="http://www.w3.org/2000/svg" width="3in" height="2.875in" viewBox="0 0 3 2.875"><rect x="0" y="0" width="3" height="2.875" fill="none" stroke="green" stroke-width="1px" vector-effect="non-scaling-stroke" />
+    <text x="1.5" y="1.4375" 
+            transform="rotate(0 1.5 1.4375)"
             font-family="Arial, sans-serif" 
-            font-size="1.25" 
+            font-size="0.6666667" 
             text-anchor="middle" 
             dominant-baseline="middle" 
             fill="blue" 
             stroke="none">
             Lebron
         </text>
-    <g transform="rotate(0 0.15 2.875)"><path d="M 0.10700001 2.625 L 0.193 2.625 L 0.193 2.715 L 0.25 2.715 L 0.25 2.785 L 0.193 2.785 L 0.193 2.875 L 0.10700001 2.875 L 0.10700001 2.785 L 0.050000004 2.785 L 0.050000004 2.715 L 0.10700001 2.715 Z" fill="none" stroke="white" stroke-width="1px" vector-effect="non-scaling-stroke" /></g><g transform="rotate(0 5.85 2.875)"><path d="M 5.8069997 2.625 L 5.893 2.625 L 5.893 2.715 L 5.95 2.715 L 5.95 2.785 L 5.893 2.785 L 5.893 2.875 L 5.8069997 2.875 L 5.8069997 2.785 L 5.75 2.785 L 5.75 2.715 L 5.8069997 2.715 Z" fill="none" stroke="white" stroke-width="1px" vector-effect="non-scaling-stroke" /></g>
+    <g transform="rotate(0 0.15 2.875)"><path d="M 0.10700001 2.625 L 0.193 2.625 L 0.193 2.715 L 0.25 2.715 L 0.25 2.785 L 0.193 2.785 L 0.193 2.875 L 0.10700001 2.875 L 0.10700001 2.785 L 0.050000004 2.785 L 0.050000004 2.715 L 0.10700001 2.715 Z" fill="none" stroke="white" stroke-width="1px" vector-effect="non-scaling-stroke" /></g><g transform="rotate(0 2.85 2.875)"><path d="M 2.807 2.625 L 2.893 2.625 L 2.893 2.715 L 2.9499998 2.715 L 2.9499998 2.785 L 2.893 2.785 L 2.893 2.875 L 2.807 2.875 L 2.807 2.785 L 2.75 2.785 L 2.75 2.715 L 2.807 2.715 Z" fill="none" stroke="white" stroke-width="1px" vector-effect="non-scaling-stroke" /></g>
     <circle cx="0.0625" cy="1.4375" 
         r="0.043" 
         fill="none"
@@ -18,7 +18,7 @@
         vector-effect="non-scaling-stroke"
     />
     
-    <circle cx="5.9375" cy="1.4375" 
+    <circle cx="2.9375" cy="1.4375" 
         r="0.043" 
         fill="none"
         stroke="white"
@@ -26,19 +26,11 @@
         vector-effect="non-scaling-stroke"
     />
     
-    <circle cx="2.1875" cy="1.4375" 
+    <circle cx="1.1875" cy="1.4375" 
         r="0.043" 
         fill="none"
         stroke="white"
         stroke-width="1px" 
         vector-effect="non-scaling-stroke"
     />
-    
-    <circle cx="3.8125" cy="1.4375" 
-        r="0.043" 
-        fill="none"
-        stroke="white"
-        stroke-width="1px" 
-        vector-effect="non-scaling-stroke"
-    />
-    <g transform="rotate(0 2 2.875)"><path d="M 1.957 2.625 L 2.043 2.625 L 2.043 2.715 L 2.1 2.715 L 2.1 2.785 L 2.043 2.785 L 2.043 2.875 L 1.957 2.875 L 1.957 2.785 L 1.9 2.785 L 1.9 2.715 L 1.957 2.715 Z" fill="none" stroke="white" stroke-width="1px" vector-effect="non-scaling-stroke" /></g><g transform="rotate(0 4 2.875)"><path d="M 3.957 2.625 L 4.043 2.625 L 4.043 2.715 L 4.1 2.715 L 4.1 2.785 L 4.043 2.785 L 4.043 2.875 L 3.957 2.875 L 3.957 2.785 L 3.9 2.785 L 3.9 2.715 L 3.957 2.715 Z" fill="none" stroke="white" stroke-width="1px" vector-effect="non-scaling-stroke" /></g></svg>
+    <g transform="rotate(0 1.5 2.875)"><path d="M 1.457 2.625 L 1.543 2.625 L 1.543 2.715 L 1.6 2.715 L 1.6 2.785 L 1.543 2.785 L 1.543 2.875 L 1.457 2.875 L 1.457 2.785 L 1.4 2.785 L 1.4 2.715 L 1.457 2.715 Z" fill="none" stroke="white" stroke-width="1px" vector-effect="non-scaling-stroke" /></g></svg>
