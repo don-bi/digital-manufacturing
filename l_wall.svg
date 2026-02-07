@@ -1,68 +1,37 @@
 <?xml version="1.0" encoding="UTF-8" ?>
     <svg xmlns="http://www.w3.org/2000/svg" version="1.1" 
-        width="5in" height="2in" viewBox="0 0 5 2">
-        <rect x="0" y="0" width="5" height="2"
+        width="3in" height="1.875in" viewBox="0 0 3 1.875">
+        <rect x="0" y="0" width="3" height="1.875"
             fill="none" 
-            stroke="black"
+            stroke="white"
             stroke-width="1px" 
             vector-effect="non-scaling-stroke"
         />
-     <g transform="rotate(0 0.15 2)"> 
-    <rect x="0.10700001" y="1.75" width="0.086" height="0.25"
-        fill="none" 
-        stroke="black"
-        stroke-width="1px" 
-        vector-effect="non-scaling-stroke"
-    />
     
-    <rect x="0.05000000596046447" y="1.84" width="0.2" height="0.07"
-        fill="none" 
-        stroke="black"
-        stroke-width="1px" 
-        vector-effect="non-scaling-stroke"
-    />
-    </g> <g transform="rotate(0 4.85 2)"> 
-    <rect x="4.8069997" y="1.75" width="0.086" height="0.25"
-        fill="none" 
-        stroke="black"
-        stroke-width="1px" 
-        vector-effect="non-scaling-stroke"
-    />
-    
-    <rect x="4.749999904632569" y="1.84" width="0.2" height="0.07"
-        fill="none" 
-        stroke="black"
-        stroke-width="1px" 
-        vector-effect="non-scaling-stroke"
-    />
-    </g>
-    <circle cx="0.0625" cy="1" 
+    <text x="1.5" y="0.9375" 
+            transform="rotate(0 1.5 0.9375)"
+            font-family="Arial, sans-serif" 
+            font-size="0.57142854" 
+            text-anchor="middle" 
+            dominant-baseline="middle" 
+            fill="blue" 
+            stroke="none">
+            ewqeqwe
+        </text>
+    <g transform="rotate(0 0.15 1.875)"><path d="M 0.10700001 1.625 L 0.193 1.625 L 0.193 1.715 L 0.25 1.715 L 0.25 1.785 L 0.193 1.785 L 0.193 1.875 L 0.10700001 1.875 L 0.10700001 1.785 L 0.050000004 1.785 L 0.050000004 1.715 L 0.10700001 1.715 Z" fill="none" stroke="white" stroke-width="1px" vector-effect="non-scaling-stroke" /></g><g transform="rotate(0 2.85 1.875)"><path d="M 2.807 1.625 L 2.893 1.625 L 2.893 1.715 L 2.9499998 1.715 L 2.9499998 1.785 L 2.893 1.785 L 2.893 1.875 L 2.807 1.875 L 2.807 1.785 L 2.75 1.785 L 2.75 1.715 L 2.807 1.715 Z" fill="none" stroke="white" stroke-width="1px" vector-effect="non-scaling-stroke" /></g>
+    <circle cx="0.0625" cy="0.9375" 
         r="0.043" 
         fill="none"
-        stroke="black"
+        stroke="white"
         stroke-width="1px" 
         vector-effect="non-scaling-stroke"
     />
     
-    <circle cx="4.9375" cy="1" 
+    <circle cx="2.9375" cy="0.9375" 
         r="0.043" 
         fill="none"
-        stroke="black"
+        stroke="white"
         stroke-width="1px" 
         vector-effect="non-scaling-stroke"
     />
-     <g transform="rotate(0 2.5 2)"> 
-    <rect x="2.457" y="1.75" width="0.086" height="0.25"
-        fill="none" 
-        stroke="black"
-        stroke-width="1px" 
-        vector-effect="non-scaling-stroke"
-    />
-    
-    <rect x="2.4" y="1.84" width="0.2" height="0.07"
-        fill="none" 
-        stroke="black"
-        stroke-width="1px" 
-        vector-effect="non-scaling-stroke"
-    />
-    </g></svg>
+    <g transform="rotate(0 1.5 1.875)"><path d="M 1.457 1.625 L 1.543 1.625 L 1.543 1.715 L 1.6 1.715 L 1.6 1.785 L 1.543 1.785 L 1.543 1.875 L 1.457 1.875 L 1.457 1.785 L 1.4 1.785 L 1.4 1.715 L 1.457 1.715 Z" fill="none" stroke="white" stroke-width="1px" vector-effect="non-scaling-stroke" /></g></svg>

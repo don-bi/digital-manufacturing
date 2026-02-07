@@ -3,6 +3,7 @@
 #include <format>
 #include <string>
 #include <vector>
+#include <algorithm> // Needed for min/max
 
 using namespace std;
 
@@ -68,7 +69,54 @@ std::string t_slot(float x, float y, float angle_deg) {
     return slot_str;
 }
 
+std::string generate_text(string text, float x, float y, float container_w, float container_h, float rotation_deg) {
+    if (text.empty()) return "";
 
+    // Determine available space based on rotation.
+    // If rotated 90 or 270, the text runs along the Y-axis (container_h).
+    // The "height" of the letters must fit within the X-axis (container_w).
+    bool is_vertical = (static_cast<int>(abs(rotation_deg)) % 180 == 90);
+
+    float space_for_text_length = is_vertical ? container_h : container_w;
+    float space_for_text_height = is_vertical ? container_w : container_h;
+
+    // Margins: use 80% of the parallel dimension and 60% of the perpendicular dimension
+    float usable_length = space_for_text_length * 0.8f;
+    float usable_height = space_for_text_height * 0.6f;
+    
+    // Estimate aspect ratio (width is approx 0.6 of height for standard sans-serif)
+    float char_aspect = 0.6f; 
+    
+    // 1. Scale based on string length fitting into the usable length
+    float size_by_len = usable_length / (text.length() * char_aspect);
+    
+    // 2. Scale based on font height fitting into the usable height
+    float size_by_height = usable_height;
+
+    // Pick the smaller constraint to ensure it fits inside
+    float font_size = std::min(size_by_len, size_by_height);
+
+    // Caps to prevent massive or microscopic text
+    font_size = std::min(font_size, 1.25f); 
+    font_size = std::max(font_size, 0.15f);
+
+    // Generate SVG with rotation transform centered on x,y
+    string text_svg = format(R"SVG(
+    <text x="{0}" y="{1}" 
+            transform="rotate({4} {0} {1})"
+            font-family="Arial, sans-serif" 
+            font-size="{2}" 
+            text-anchor="middle" 
+            dominant-baseline="middle" 
+            fill="blue" 
+            stroke="none">
+            {3}
+        </text>
+    )SVG", x, y, font_size, text, rotation_deg);
+
+
+    return text_svg;
+}
 
 int main(int argc, char** argv) {
     float width, length, height;
@@ -146,12 +194,19 @@ int main(int argc, char** argv) {
         cout << "Error: Invalid input.\n";
         cin.clear(); cin.ignore(1000, '\n');
     }
-    string base_text;
-    while (do_text == 'y') {
-        cout << "What should the text be? (max 20 characters)\n";
-        if (cin >> base_text) break;
-        cout << "Error: Invalid input.\n";
-        cin.clear(); cin.ignore(1000, '\n');
+    string base_text = "";
+    if (do_text == 'y') {
+        cin.ignore(1000, '\n'); 
+        
+        while (true) {
+            cout << "What should the text be? (max 20 characters)\n";
+            getline(cin, base_text);
+            
+            if (!base_text.empty() && base_text.length() <= 20) {
+                break;
+            }
+            cout << "Error: Text must be between 1 and 20 characters.\n";
+        }
     }
 
     while (true) {
@@ -160,12 +215,19 @@ int main(int argc, char** argv) {
         cout << "Error: Invalid input.\n";
         cin.clear(); cin.ignore(1000, '\n');
     }
-    string length_text;
-    while (do_text == 'y') {
-        cout << "What should the text be? (max 20 characters)\n";
-        if (cin >> length_text) break;
-        cout << "Error: Invalid input.\n";
-        cin.clear(); cin.ignore(1000, '\n');
+    string length_text = "";
+    if (do_text == 'y') {
+        cin.ignore(1000, '\n'); 
+        
+        while (true) {
+            cout << "What should the text be? (max 20 characters)\n";
+            getline(cin, length_text);
+            
+            if (!length_text.empty() && length_text.length() <= 20) {
+                break;
+            }
+            cout << "Error: Text must be between 1 and 20 characters.\n";
+        }
     }
 
     // ==========================================
@@ -183,6 +245,9 @@ int main(int argc, char** argv) {
             vector-effect="non-scaling-stroke"
         />
     )", width, length);
+
+    // Add Base Text
+    base_svg += generate_text(base_text, width/2.0f, length/2.0f, width, length, 90);
 
     base_svg += screw_hole(HALF_ACRYLIC_THICKNESS, 0.15);
     base_svg += screw_hole(HALF_ACRYLIC_THICKNESS, length - 0.15);
@@ -225,6 +290,8 @@ int main(int argc, char** argv) {
             vector-effect="non-scaling-stroke"
         />
     )", length, height);
+    
+    l_wall_svg += generate_text(length_text, length/2.0f, height/2.0f, length, height, 0);
 
     l_wall_svg += t_slot(0.15, height, 0);
     l_wall_svg += t_slot(length - 0.15, height, 0);

@@ -1,102 +1,85 @@
 <?xml version="1.0" encoding="UTF-8" ?>
     <svg xmlns="http://www.w3.org/2000/svg" version="1.1" 
-        width="3in" height="5in" viewBox="0 0 3 5">
-        <rect x="0" y="0" width="3" height="5"
+        width="5in" height="3in" viewBox="0 0 5 3">
+        <rect x="0" y="0" width="5" height="3"
             fill="none" 
-            stroke="black"
+            stroke="white"
             stroke-width="1px" 
             vector-effect="non-scaling-stroke"
         />
     
+    <text x="2.5" y="1.5" 
+            transform="rotate(90 2.5 1.5)"
+            font-family="Arial, sans-serif" 
+            font-size="0.5" 
+            text-anchor="middle" 
+            dominant-baseline="middle" 
+            fill="blue" 
+            stroke="none">
+            coelckei
+        </text>
+    
     <circle cx="0.0625" cy="0.15" 
         r="0.043" 
         fill="none"
-        stroke="black"
+        stroke="white"
         stroke-width="1px" 
         vector-effect="non-scaling-stroke"
     />
     
-    <circle cx="0.0625" cy="4.85" 
+    <circle cx="0.0625" cy="2.85" 
         r="0.043" 
         fill="none"
-        stroke="black"
+        stroke="white"
         stroke-width="1px" 
         vector-effect="non-scaling-stroke"
     />
     
-    <circle cx="2.9375" cy="0.15" 
+    <circle cx="4.9375" cy="0.15" 
         r="0.043" 
         fill="none"
-        stroke="black"
+        stroke="white"
         stroke-width="1px" 
         vector-effect="non-scaling-stroke"
     />
     
-    <circle cx="2.9375" cy="4.85" 
+    <circle cx="4.9375" cy="2.85" 
         r="0.043" 
         fill="none"
-        stroke="black"
+        stroke="white"
         stroke-width="1px" 
         vector-effect="non-scaling-stroke"
     />
     
-    <circle cx="1.5" cy="0.0625" 
+    <circle cx="2.5" cy="0.0625" 
         r="0.043" 
         fill="none"
-        stroke="black"
+        stroke="white"
         stroke-width="1px" 
         vector-effect="non-scaling-stroke"
     />
     
-    <circle cx="1.5" cy="4.9375" 
+    <circle cx="2.5" cy="2.9375" 
         r="0.043" 
         fill="none"
-        stroke="black"
-        stroke-width="1px" 
-        vector-effect="non-scaling-stroke"
-    />
-     <g transform="rotate(0 1.5 5)"> 
-    <rect x="1.457" y="4.75" width="0.086" height="0.25"
-        fill="none" 
-        stroke="black"
+        stroke="white"
         stroke-width="1px" 
         vector-effect="non-scaling-stroke"
     />
     
-    <rect x="1.4" y="4.84" width="0.2" height="0.07"
-        fill="none" 
-        stroke="black"
-        stroke-width="1px" 
-        vector-effect="non-scaling-stroke"
-    />
-    </g>
-    <circle cx="0.0625" cy="2.5" 
+    <circle cx="0.0625" cy="1.5" 
         r="0.043" 
         fill="none"
-        stroke="black"
+        stroke="white"
         stroke-width="1px" 
         vector-effect="non-scaling-stroke"
     />
     
-    <circle cx="2.9375" cy="2.5" 
+    <circle cx="4.9375" cy="1.5" 
         r="0.043" 
         fill="none"
-        stroke="black"
+        stroke="white"
         stroke-width="1px" 
         vector-effect="non-scaling-stroke"
     />
-     <g transform="rotate(90 0 2.5)"> 
-    <rect x="-0.043" y="2.25" width="0.086" height="0.25"
-        fill="none" 
-        stroke="black"
-        stroke-width="1px" 
-        vector-effect="non-scaling-stroke"
-    />
-    
-    <rect x="-0.1" y="2.34" width="0.2" height="0.07"
-        fill="none" 
-        stroke="black"
-        stroke-width="1px" 
-        vector-effect="non-scaling-stroke"
-    />
-    </g></svg>
+    </svg>
