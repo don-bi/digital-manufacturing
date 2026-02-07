@@ -1,0 +1,68 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+    <svg xmlns="http://www.w3.org/2000/svg" version="1.1" 
+        width="5in" height="2in" viewBox="0 0 5 2">
+        <rect x="0" y="0" width="5" height="2"
+            fill="none" 
+            stroke="black"
+            stroke-width="1px" 
+            vector-effect="non-scaling-stroke"
+        />
+     <g transform="rotate(0 0.15 2)"> 
+    <rect x="0.10700001" y="1.75" width="0.086" height="0.25"
+        fill="none" 
+        stroke="black"
+        stroke-width="1px" 
+        vector-effect="non-scaling-stroke"
+    />
+    
+    <rect x="0.05000000596046447" y="1.84" width="0.2" height="0.07"
+        fill="none" 
+        stroke="black"
+        stroke-width="1px" 
+        vector-effect="non-scaling-stroke"
+    />
+    </g> <g transform="rotate(0 4.85 2)"> 
+    <rect x="4.8069997" y="1.75" width="0.086" height="0.25"
+        fill="none" 
+        stroke="black"
+        stroke-width="1px" 
+        vector-effect="non-scaling-stroke"
+    />
+    
+    <rect x="4.749999904632569" y="1.84" width="0.2" height="0.07"
+        fill="none" 
+        stroke="black"
+        stroke-width="1px" 
+        vector-effect="non-scaling-stroke"
+    />
+    </g>
+    <circle cx="0.0625" cy="1" 
+        r="0.043" 
+        fill="none"
+        stroke="black"
+        stroke-width="1px" 
+        vector-effect="non-scaling-stroke"
+    />
+    
+    <circle cx="4.9375" cy="1" 
+        r="0.043" 
+        fill="none"
+        stroke="black"
+        stroke-width="1px" 
+        vector-effect="non-scaling-stroke"
+    />
+     <g transform="rotate(0 2.5 2)"> 
+    <rect x="2.457" y="1.75" width="0.086" height="0.25"
+        fill="none" 
+        stroke="black"
+        stroke-width="1px" 
+        vector-effect="non-scaling-stroke"
+    />
+    
+    <rect x="2.4" y="1.84" width="0.2" height="0.07"
+        fill="none" 
+        stroke="black"
+        stroke-width="1px" 
+        vector-effect="non-scaling-stroke"
+    />
+    </g></svg>

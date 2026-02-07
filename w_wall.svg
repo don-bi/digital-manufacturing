@@ -1,0 +1,52 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+    <svg xmlns="http://www.w3.org/2000/svg" version="1.1" 
+        width="2.75in" height="2in" viewBox="0 0 2.75 2">
+        <rect x="0" y="0" width="2.75" height="2"
+            fill="none" 
+            stroke="black"
+            stroke-width="1px" 
+            vector-effect="non-scaling-stroke"
+        />
+     <g transform="rotate(90 0 1)"> 
+    <rect x="-0.043" y="0.75" width="0.086" height="0.25"
+        fill="none" 
+        stroke="black"
+        stroke-width="1px" 
+        vector-effect="non-scaling-stroke"
+    />
+    
+    <rect x="-0.1" y="0.84" width="0.2" height="0.07"
+        fill="none" 
+        stroke="black"
+        stroke-width="1px" 
+        vector-effect="non-scaling-stroke"
+    />
+    </g> <g transform="rotate(270 2.75 1)"> 
+    <rect x="2.707" y="0.75" width="0.086" height="0.25"
+        fill="none" 
+        stroke="black"
+        stroke-width="1px" 
+        vector-effect="non-scaling-stroke"
+    />
+    
+    <rect x="2.65" y="0.84" width="0.2" height="0.07"
+        fill="none" 
+        stroke="black"
+        stroke-width="1px" 
+        vector-effect="non-scaling-stroke"
+    />
+    </g> <g transform="rotate(0 1.375 2)"> 
+    <rect x="1.332" y="1.75" width="0.086" height="0.25"
+        fill="none" 
+        stroke="black"
+        stroke-width="1px" 
+        vector-effect="non-scaling-stroke"
+    />
+    
+    <rect x="1.275" y="1.84" width="0.2" height="0.07"
+        fill="none" 
+        stroke="black"
+        stroke-width="1px" 
+        vector-effect="non-scaling-stroke"
+    />
+    </g></svg>
