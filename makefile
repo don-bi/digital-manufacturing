@@ -4,11 +4,11 @@ CXX = g++ -std=c++20
 CFLAGS = -g -Wall
 CXXFLAGS = -g -Wall
 
-square: square.o
+container: container.o
 
 .PHONY: clean
 clean:
-	rm -f *.o square
+	rm -f *.o container
 
 .PHONY: all
-all: clean square
+all: clean container

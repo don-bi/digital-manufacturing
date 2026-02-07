@@ -169,19 +169,36 @@ string read_svg_file(const string& filename) {
     return content;
 }
 
+void replace_all(string& str, const string& from, const string& to) {
+    if(from.empty()) return;
+    size_t start_pos = 0;
+    while((start_pos = str.find(from, start_pos)) != string::npos) {
+        str.replace(start_pos, from.length(), to);
+        start_pos += to.length(); // In case 'to' contains 'from', like replacing 'x' with 'yx'
+    }
+}
+
 string generate_logo_face(float width, float height) {
-    // 1. calculate logo positioning
+    // calculate logo positioning
     float img_w = width * 0.7f;
     float img_h = height * 0.5f;
     float img_x = (width - img_w) / 2.0f;
     float img_y = height * 0.1f; 
 
-    // 2. read svg file content
+    // read svg file content
     string logo_raw_content = read_svg_file("columbia_engineering.svg");
+
+    // replace colors
+    replace_all(logo_raw_content, "fill=\"#000000\"", "fill=\"blue\"");
+    replace_all(logo_raw_content, "fill=\"black\"",    "fill=\"blue\"");
+    replace_all(logo_raw_content, "stroke=\"#000000\"", "stroke=\"blue\"");
+    replace_all(logo_raw_content, "stroke=\"black\"",   "stroke=\"blue\"");
     
-    // 3. extract the actual viewBox
+    replace_all(logo_raw_content, ":#000000", ":blue");
+    replace_all(logo_raw_content, ":black",   ":blue");
+    
+    // extract the actual viewBox
     string logo_viewbox = "0 0 100 100"; 
-    
     size_t vb_pos = logo_raw_content.find("viewBox=\"");
     if (vb_pos != string::npos) {
         size_t start = vb_pos + 9; // Skip past viewBox="
@@ -191,14 +208,14 @@ string generate_logo_face(float width, float height) {
         }
     }
 
-    // 4. Wrapper SVG
+    // Wrapper SVG
     string content = format(R"(
-        <svg x="{0}" y="{1}" width="{2}" height="{3}" viewBox="{4}" preserveAspectRatio="xMidYMid meet">
+        <svg x="{0}" y="{1}" width="{2}" height="{3}" viewBox="{4}" preserveAspectRatio="xMidYMid meet" fill="blue">
             {5}
         </svg>
     )", img_x, img_y, img_w, img_h, logo_viewbox, logo_raw_content);
 
-    // 5. Add Text "Digital Manufacturing" below logo
+    // add text
     string text = "Digital Manufacturing";
     float text_y = height * 0.75f;
     
@@ -221,21 +238,21 @@ int main(int argc, char** argv) {
 
     while (true) {
         cout << "What should the width of the box be? (in)\n";
-        if (cin >> width && width > 0 && width <= 100) break;
-        cout << "Error: Invalid width.\n";
+        if (cin >> width && width >= 2 && width <= 12) break;
+        cout << "Error: Invalid width (min 2in, max 12in).\n";
         cin.clear(); cin.ignore(1000, '\n');
     }
     while (true) {
         cout << "What should the length of the container be? (in)\n";
-        if (cin >> length && length > 0 && length <= 100) break;
-        cout << "Error: Invalid length.\n";
+        if (cin >> length && length >= 2 && length <= 18) break;
+        cout << "Error: Invalid length (min 2in, max 18in).\n";
         cin.clear(); cin.ignore(1000, '\n');
     }
     while (true) {
         cout << "What should the height of the box be? (in)\n";
-        if (cin >> height && height > 0 && height <= 100) break;
-        cout << "Error: Invalid height.\n";
-        cin.clear(); cin.ignore(1000, '\n'); // Clear buffer on bad input
+        if (cin >> height && height >= 2 && height <= 12) break;
+        cout << "Error: Invalid height (min 2in, max 12in).\n";
+        cin.clear(); cin.ignore(1000, '\n');
     }
     height -= ACRYLIC_THICKNESS;
 
@@ -247,7 +264,7 @@ int main(int argc, char** argv) {
         cout << "How many sections do you want?\n";
         if (cin >> num_sections && num_sections <= available_space / min_section_thickness) break;
         cout << "Error: Too many sections for this container.\n";
-        cin.clear(); cin.ignore(1000, '\n'); // Clear buffer on bad input
+        cin.clear(); cin.ignore(1000, '\n');
     }
 
     vector<float> section_lens;
@@ -257,20 +274,36 @@ int main(int argc, char** argv) {
         cout << "You will choose the length of each section now. It will add a 0.125in divider after each of your section's provided length. The minimum section length is 0.5 inches\n";
         continue_prompt = false;
         for (int i = 0; i < num_sections-1; i ++) {
-            if (remaining_space < min_section_thickness) {
-                cout << "Error: Not enough space for minimum section length.";
+            if (remaining_space <= 0.5 + ACRYLIC_THICKNESS) {
+                cout << "Error: Not enough space for minimum section length.\n";
                 continue_prompt = true;
+                cin.clear(); cin.ignore(1000, '\n'); // Clear buffer on bad input
+                remaining_space = available_space;
+                section_lens.clear();
                 break;
             }
             float curr_sec_len;
             while (true) {
                 cout << format("What should the length of section {} be? (in) [Remaining Space: {}]\n", i+1, remaining_space);
-                if (cin >> curr_sec_len && curr_sec_len + ACRYLIC_THICKNESS + 0.5 <= remaining_space) break; // the input is good
-                cout << "Error: Selected section length is too large.";
+                if (cin >> curr_sec_len && curr_sec_len < 0.5) { // the input is good
+                    cout << "Error: Selected section length is too small.\n";
+                    cin.clear(); cin.ignore(1000, '\n');
+                    continue;
+                }
+
+                if (curr_sec_len && curr_sec_len + ACRYLIC_THICKNESS <= remaining_space) break; // the input is good
+                cout << "Error: Selected section length is too large.\n";
                 cin.clear(); cin.ignore(1000, '\n'); // Clear buffer on bad input
             }
             remaining_space -= curr_sec_len + ACRYLIC_THICKNESS;
             section_lens.push_back(curr_sec_len);
+        }
+        if (remaining_space < 0.5) {
+            cout << "Error: Not enough space for minimum section length (last section).\n";
+            continue_prompt = true;
+            cin.clear(); cin.ignore(1000, '\n'); // Clear buffer on bad input
+            remaining_space = available_space;
+            section_lens.clear();
         }
     }
     section_lens.push_back(remaining_space);
@@ -325,175 +358,168 @@ int main(int argc, char** argv) {
     }
 
     // ==========================================
-    // FILE 1: Base (Rectangle)
+    // GENERATE GEOMETRY
     // ==========================================
-    ofstream base("base.svg", ios::binary);
 
-    string base_svg = format(R"(<?xml version="1.0" encoding="UTF-8" ?>
-    <svg xmlns="http://www.w3.org/2000/svg" version="1.1" 
-        width="{0}in" height="{1}in" viewBox="0 0 {0} {1}">
-        <rect x="0" y="0" width="{0}" height="{1}"
-            fill="none" 
-            stroke="white"
-            stroke-width="1px" 
-            vector-effect="non-scaling-stroke"
-        />
-    )", width, length);
-
-    // Add Base Text
-    base_svg += generate_text(base_text, width/2.0f, length/2.0f, width, length, 90);
-
-    base_svg += screw_hole(HALF_ACRYLIC_THICKNESS, 0.15);
-    base_svg += screw_hole(HALF_ACRYLIC_THICKNESS, length - 0.15);
-    base_svg += screw_hole(width - HALF_ACRYLIC_THICKNESS, 0.15);
-    base_svg += screw_hole(width - HALF_ACRYLIC_THICKNESS, length - 0.15);
-
-    // for x
-    int num_screws = width / 3;
-    float interval_inc = width / (num_screws + 1.0);
-    for (int i = 0; i < num_screws; i++) {
-        base_svg += screw_hole(interval_inc * (i+1), HALF_ACRYLIC_THICKNESS);
-        base_svg += screw_hole(interval_inc * (i+1), length - HALF_ACRYLIC_THICKNESS);
-    }
-
-    // for y
-    num_screws = length / 3;
-    interval_inc = length / (num_screws + 1.0);
-    for (int i = 0; i < num_screws; i++) {
-        base_svg += screw_hole(HALF_ACRYLIC_THICKNESS, interval_inc * (i+1));
-        base_svg += screw_hole(width - HALF_ACRYLIC_THICKNESS, interval_inc * (i+1));
-    }
-
-    base_svg += "</svg>";
-
-    base << base_svg;
-    base.close();
-
-    // ==========================================
-    // FILE 2: Length Wall
-    // ==========================================
-    ofstream l_wall("l_wall.svg", ios::binary);
-
-    string l_wall_svg = format(R"(<?xml version="1.0" encoding="UTF-8" ?>
-    <svg xmlns="http://www.w3.org/2000/svg" version="1.1" 
-        width="{0}in" height="{1}in" viewBox="0 0 {0} {1}">
-        <rect x="0" y="0" width="{0}" height="{1}"
-            fill="none" 
-            stroke="white"
-            stroke-width="1px" 
-            vector-effect="non-scaling-stroke"
-        />
-    )", length, height);
+    // --- 1. BASE CONTENT ---
+    string base_inner = "";
+    base_inner += "<rect x=\"0\" y=\"0\" width=\"" + format("{}", width) + "\" height=\"" + format("{}", length) + "\" fill=\"none\" stroke=\"white\" stroke-width=\"1px\" vector-effect=\"non-scaling-stroke\" />";
+    base_inner += generate_text(base_text, width/2.0f, length/2.0f, width, length, 90);
     
-    l_wall_svg += generate_text(length_text, length/2.0f, height/2.0f, length, height, 0);
+    // corners
+    base_inner += screw_hole(HALF_ACRYLIC_THICKNESS, 0.15);
+    base_inner += screw_hole(HALF_ACRYLIC_THICKNESS, length - 0.15);
+    base_inner += screw_hole(width - HALF_ACRYLIC_THICKNESS, 0.15);
+    base_inner += screw_hole(width - HALF_ACRYLIC_THICKNESS, length - 0.15);
 
-    l_wall_svg += t_slot(0.15, height, 0);
-    l_wall_svg += t_slot(length - 0.15, height, 0);
-    l_wall_svg += screw_hole(HALF_ACRYLIC_THICKNESS, height / 2);
-    l_wall_svg += screw_hole(length - HALF_ACRYLIC_THICKNESS, height / 2);
+    // side screws (X)
+    int num_screws_w = width / 3;
+    float interval_inc_w = width / (num_screws_w + 1.0);
+    for (int i = 0; i < num_screws_w; i++) {
+        base_inner += screw_hole(interval_inc_w * (i+1), HALF_ACRYLIC_THICKNESS);
+        base_inner += screw_hole(interval_inc_w * (i+1), length - HALF_ACRYLIC_THICKNESS);
+    }
+    // side screws (Y)
+    int num_screws_l = length / 3;
+    float interval_inc_l = length / (num_screws_l + 1.0);
+    for (int i = 0; i < num_screws_l; i++) {
+        base_inner += screw_hole(HALF_ACRYLIC_THICKNESS, interval_inc_l * (i+1));
+        base_inner += screw_hole(width - HALF_ACRYLIC_THICKNESS, interval_inc_l * (i+1));
+    }
+
+    // --- 2. LENGTH WALL CONTENT ---
+    string l_wall_inner = "";
+    l_wall_inner += "<rect x=\"0\" y=\"0\" width=\"" + format("{}", length) + "\" height=\"" + format("{}", height) + "\" fill=\"none\" stroke=\"white\" stroke-width=\"1px\" vector-effect=\"non-scaling-stroke\" />";
+    l_wall_inner += generate_text(length_text, length/2.0f, height/2.0f, length, height, 0);
+    l_wall_inner += t_slot(0.15, height, 0);
+    l_wall_inner += t_slot(length - 0.15, height, 0);
+    l_wall_inner += screw_hole(HALF_ACRYLIC_THICKNESS, height / 2);
+    l_wall_inner += screw_hole(length - HALF_ACRYLIC_THICKNESS, height / 2);
 
     float offset = ACRYLIC_THICKNESS;
     for (int i = 0; i < num_sections-1; i ++) {
-        l_wall_svg += screw_hole(offset + section_lens[i] + HALF_ACRYLIC_THICKNESS, height / 2);
+        l_wall_inner += screw_hole(offset + section_lens[i] + HALF_ACRYLIC_THICKNESS, height / 2);
         offset += section_lens[i] + ACRYLIC_THICKNESS;
     }
-
-    num_screws = length / 3;
-    interval_inc = length / (num_screws + 1.0);
-    for (int i = 0; i < num_screws; i++) {
-        l_wall_svg += t_slot(interval_inc * (i+1), height, 0);
+    for (int i = 0; i < num_screws_l; i++) {
+        l_wall_inner += t_slot(interval_inc_l * (i+1), height, 0);
     }
-    l_wall_svg += "</svg>";
 
-    l_wall << l_wall_svg;
-    l_wall.close();
-
-    // ==========================================
-    // FILE 3a: Width Wall FRONT (Logo + Text)
-    // ==========================================
+    // --- 3a. WIDTH WALL FRONT CONTENT ---
     float w_wall_width = width - ACRYLIC_THICKNESS*2;
-    ofstream w_front("w_wall_front.svg", ios::binary);
+    string w_front_inner = "";
+    w_front_inner += "<rect x=\"0\" y=\"0\" width=\"" + format("{}", w_wall_width) + "\" height=\"" + format("{}", height) + "\" fill=\"none\" stroke=\"white\" stroke-width=\"1px\" vector-effect=\"non-scaling-stroke\" />";
+    w_front_inner += t_slot(0, height / 2, 90);
+    w_front_inner += t_slot(w_wall_width, height / 2, 270);
+    for (int i = 0; i < num_screws_w; i++) {
+        w_front_inner += t_slot(interval_inc_w * (i+1) - ACRYLIC_THICKNESS, height, 0);
+    }
+    w_front_inner += generate_logo_face(w_wall_width, height);
 
-    string w_front_svg = format(R"(<?xml version="1.0" encoding="UTF-8" ?>
-    <svg xmlns="http://www.w3.org/2000/svg" version="1.1" 
-        width="{0}in" height="{1}in" viewBox="0 0 {0} {1}">
-        <rect x="0" y="0" width="{0}" height="{1}"
-            fill="none" 
-            stroke="white"
-            stroke-width="1px" 
-            vector-effect="non-scaling-stroke"
-        />
-    )", w_wall_width, height);
+    // --- 3b. WIDTH WALL BACK CONTENT ---
+    string w_back_inner = "";
+    w_back_inner += "<rect x=\"0\" y=\"0\" width=\"" + format("{}", w_wall_width) + "\" height=\"" + format("{}", height) + "\" fill=\"none\" stroke=\"white\" stroke-width=\"1px\" vector-effect=\"non-scaling-stroke\" />";
+    w_back_inner += t_slot(0, height / 2, 90);
+    w_back_inner += t_slot(w_wall_width, height / 2, 270);
+    for (int i = 0; i < num_screws_w; i++) {
+        w_back_inner += t_slot(interval_inc_w * (i+1) - ACRYLIC_THICKNESS, height, 0);
+    }
+    w_back_inner += generate_fractal_face(w_wall_width, height);
 
-    w_front_svg += t_slot(0, height / 2, 90);
-    w_front_svg += t_slot(w_wall_width, height / 2, 270);
+    // --- 4. DIVIDER WALL CONTENT ---
+    string d_wall_inner = "";
+    d_wall_inner += "<rect x=\"0\" y=\"0\" width=\"" + format("{}", w_wall_width) + "\" height=\"" + format("{}", height) + "\" fill=\"none\" stroke=\"white\" stroke-width=\"1px\" vector-effect=\"non-scaling-stroke\" />";
+    d_wall_inner += t_slot(0, height / 2, 90);
+    d_wall_inner += t_slot(w_wall_width, height / 2, 270);
+
+    // ==========================================
+    // OUTPUT INDIVIDUAL FILES
+    // ==========================================
+    auto write_svg = [](string name, float w, float h, string content) {
+        ofstream f(name, ios::binary);
+        f << format(R"(<?xml version="1.0" encoding="UTF-8" ?><svg xmlns="http://www.w3.org/2000/svg" width="{0}in" height="{1}in" viewBox="0 0 {0} {1}">{2}</svg>)", w, h, content);
+        f.close();
+    };
+
+    write_svg("base.svg", width, length, base_inner);
+    write_svg("l_wall.svg", length, height, l_wall_inner);
+    write_svg("w_wall_front.svg", w_wall_width, height, w_front_inner);
+    write_svg("w_wall_back.svg", w_wall_width, height, w_back_inner);
+    write_svg("d_wall.svg", w_wall_width, height, d_wall_inner);
+
+    // ==========================================
+    // MASTER SVG LAYOUT (18x12 Sheet)
+    // ==========================================
+    ofstream master("master.svg", ios::binary);
     
-    //bottom screws
-    num_screws = width / 3;
-    interval_inc = width / (num_screws + 1.0);
-    for (int i = 0; i < num_screws; i++) {
-        w_front_svg += t_slot(interval_inc * (i+1) - ACRYLIC_THICKNESS, height, 0);
+    // header for master file (18x12 inches)
+    master << R"(<?xml version="1.0" encoding="UTF-8" ?>
+    <svg xmlns="http://www.w3.org/2000/svg" width="18in" height="12in" viewBox="0 0 18 12">
+    <rect x="0" y="0" width="18" height="12" fill="none" stroke="red" stroke-width="0.001in" /> 
+    )"; //cut bounds
+
+    float cur_x = 0.2f; // margin
+    float cur_y = 0.2f;
+    float row_h = 0.0f;
+    float gap = 0.25f;  // space between parts
+
+    // Lambda to place a part
+    // returns true if placed, false if it doesn't fit in the sheet
+    auto place_part = [&](string content, float part_w, float part_h, bool rotate) {
+        float effective_w = rotate ? part_h : part_w;
+        float effective_h = rotate ? part_w : part_h;
+
+        // check if we need a new row
+        if (cur_x + effective_w > 17.8f) {
+            cur_x = 0.2f;
+            cur_y += row_h + gap;
+            row_h = 0.0f;
+        }
+
+        // check if we are out of vertical space
+        if (cur_y + effective_h > 11.8f) {
+            cout << "WARNING: Part does not fit on 18x12 sheet!\n";
+            return;
+        }
+
+        // determine Transform String
+        string transform;
+        if (rotate) {
+            transform = format("translate({0}, {1}) rotate(90) translate(0, -{2})", cur_x, cur_y, part_h); 
+            transform = format("translate({0}, {1}) rotate(90)", cur_x + effective_w, cur_y);
+        } else {
+            transform = format("translate({0}, {1})", cur_x, cur_y);
+        }
+
+        master << "<g transform=\"" << transform << "\">\n" << content << "\n</g>\n";
+
+        // advance Cursor
+        cur_x += effective_w + gap;
+        row_h = max(row_h, effective_h);
+    };
+
+    // 1. PLACE BASE
+    bool rotate_base = (width > 17.5f) || (width > length && length < 11.5f);
+    place_part(base_inner, width, length, rotate_base);
+
+    // 2. PLACE WALLS
+    place_part(l_wall_inner, length, height, false);
+    place_part(l_wall_inner, length, height, false);
+
+    // 1x Front W-Wall
+    place_part(w_front_inner, w_wall_width, height, false);
+
+    // 1x Back W-Wall
+    place_part(w_back_inner, w_wall_width, height, false);
+
+    // N-1 Divider Walls
+    for(int i=0; i < num_sections-1; i++) {
+        place_part(d_wall_inner, w_wall_width, height, false);
     }
 
-    // logo & text
-    w_front_svg += generate_logo_face(w_wall_width, height);
+    master << "</svg>";
+    master.close();
 
-    w_front_svg += "</svg>";
-    w_front << w_front_svg;
-    w_front.close();
-
-    // ==========================================
-    // FILE 3b: Width Wall BACK (Fractal)
-    // ==========================================
-    ofstream w_back("w_wall_back.svg", ios::binary);
-
-    string w_back_svg = format(R"(<?xml version="1.0" encoding="UTF-8" ?>
-    <svg xmlns="http://www.w3.org/2000/svg" version="1.1" 
-        width="{0}in" height="{1}in" viewBox="0 0 {0} {1}">
-        <rect x="0" y="0" width="{0}" height="{1}"
-            fill="none" 
-            stroke="white"
-            stroke-width="1px" 
-            vector-effect="non-scaling-stroke"
-        />
-    )", w_wall_width, height);
-
-    w_back_svg += t_slot(0, height / 2, 90);
-    w_back_svg += t_slot(w_wall_width, height / 2, 270);
-    for (int i = 0; i < num_screws; i++) {
-        w_back_svg += t_slot(interval_inc * (i+1) - ACRYLIC_THICKNESS, height, 0);
-    }
-
-    // fractal
-    w_back_svg += generate_fractal_face(w_wall_width, height);
-
-    w_back_svg += "</svg>";
-    w_back << w_back_svg;
-    w_back.close();
-
-    // ==========================================
-    // FILE 4: Divider Wall
-    // ==========================================
-    ofstream d_wall("d_wall.svg", ios::binary);
-
-    string d_wall_svg = format(R"(<?xml version="1.0" encoding="UTF-8" ?>
-    <svg xmlns="http://www.w3.org/2000/svg" version="1.1" 
-        width="{0}in" height="{1}in" viewBox="0 0 {0} {1}">
-        <rect x="0" y="0" width="{0}" height="{1}"
-            fill="none" 
-            stroke="white"
-            stroke-width="1px" 
-            vector-effect="non-scaling-stroke"
-        />
-    )", width-ACRYLIC_THICKNESS*2, height);
-
-    d_wall_svg += t_slot(0, height / 2, 90);
-    d_wall_svg += t_slot(width-ACRYLIC_THICKNESS*2, height / 2, 270);
-    d_wall_svg += "</svg>";
-
-    d_wall << d_wall_svg;
-    d_wall.close();
-
-    cout << "Files generated\n";
+    cout << "Files generated, including master.svg (18x12 layout)\n";
     return 0;
 }
