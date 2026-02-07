@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="UTF-8" ?><svg xmlns="http://www.w3.org/2000/svg" width="4in" height="6in" viewBox="0 0 4 6"><rect x="0" y="0" width="4" height="6" fill="none" stroke="white" stroke-width="1px" vector-effect="non-scaling-stroke" />
+<?xml version="1.0" encoding="UTF-8" ?><svg xmlns="http://www.w3.org/2000/svg" width="4in" height="6in" viewBox="0 0 4 6"><rect x="0" y="0" width="4" height="6" fill="none" stroke="green" stroke-width="1px" vector-effect="non-scaling-stroke" />
     <text x="2" y="3" 
             transform="rotate(90 2 3)"
             font-family="Arial, sans-serif" 

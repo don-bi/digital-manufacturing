@@ -363,7 +363,7 @@ int main(int argc, char** argv) {
 
     // --- 1. BASE CONTENT ---
     string base_inner = "";
-    base_inner += "<rect x=\"0\" y=\"0\" width=\"" + format("{}", width) + "\" height=\"" + format("{}", length) + "\" fill=\"none\" stroke=\"white\" stroke-width=\"1px\" vector-effect=\"non-scaling-stroke\" />";
+    base_inner += "<rect x=\"0\" y=\"0\" width=\"" + format("{}", width) + "\" height=\"" + format("{}", length) + "\" fill=\"none\" stroke=\"green\" stroke-width=\"1px\" vector-effect=\"non-scaling-stroke\" />";
     base_inner += generate_text(base_text, width/2.0f, length/2.0f, width, length, 90);
     
     // corners
@@ -389,7 +389,7 @@ int main(int argc, char** argv) {
 
     // --- 2. LENGTH WALL CONTENT ---
     string l_wall_inner = "";
-    l_wall_inner += "<rect x=\"0\" y=\"0\" width=\"" + format("{}", length) + "\" height=\"" + format("{}", height) + "\" fill=\"none\" stroke=\"white\" stroke-width=\"1px\" vector-effect=\"non-scaling-stroke\" />";
+    l_wall_inner += "<rect x=\"0\" y=\"0\" width=\"" + format("{}", length) + "\" height=\"" + format("{}", height) + "\" fill=\"none\" stroke=\"green\" stroke-width=\"1px\" vector-effect=\"non-scaling-stroke\" />";
     l_wall_inner += generate_text(length_text, length/2.0f, height/2.0f, length, height, 0);
     l_wall_inner += t_slot(0.15, height, 0);
     l_wall_inner += t_slot(length - 0.15, height, 0);
@@ -408,7 +408,7 @@ int main(int argc, char** argv) {
     // --- 3a. WIDTH WALL FRONT CONTENT ---
     float w_wall_width = width - ACRYLIC_THICKNESS*2;
     string w_front_inner = "";
-    w_front_inner += "<rect x=\"0\" y=\"0\" width=\"" + format("{}", w_wall_width) + "\" height=\"" + format("{}", height) + "\" fill=\"none\" stroke=\"white\" stroke-width=\"1px\" vector-effect=\"non-scaling-stroke\" />";
+    w_front_inner += "<rect x=\"0\" y=\"0\" width=\"" + format("{}", w_wall_width) + "\" height=\"" + format("{}", height) + "\" fill=\"none\" stroke=\"green\" stroke-width=\"1px\" vector-effect=\"non-scaling-stroke\" />";
     w_front_inner += t_slot(0, height / 2, 90);
     w_front_inner += t_slot(w_wall_width, height / 2, 270);
     for (int i = 0; i < num_screws_w; i++) {
@@ -418,7 +418,7 @@ int main(int argc, char** argv) {
 
     // --- 3b. WIDTH WALL BACK CONTENT ---
     string w_back_inner = "";
-    w_back_inner += "<rect x=\"0\" y=\"0\" width=\"" + format("{}", w_wall_width) + "\" height=\"" + format("{}", height) + "\" fill=\"none\" stroke=\"white\" stroke-width=\"1px\" vector-effect=\"non-scaling-stroke\" />";
+    w_back_inner += "<rect x=\"0\" y=\"0\" width=\"" + format("{}", w_wall_width) + "\" height=\"" + format("{}", height) + "\" fill=\"none\" stroke=\"green\" stroke-width=\"1px\" vector-effect=\"non-scaling-stroke\" />";
     w_back_inner += t_slot(0, height / 2, 90);
     w_back_inner += t_slot(w_wall_width, height / 2, 270);
     for (int i = 0; i < num_screws_w; i++) {
@@ -428,7 +428,7 @@ int main(int argc, char** argv) {
 
     // --- 4. DIVIDER WALL CONTENT ---
     string d_wall_inner = "";
-    d_wall_inner += "<rect x=\"0\" y=\"0\" width=\"" + format("{}", w_wall_width) + "\" height=\"" + format("{}", height) + "\" fill=\"none\" stroke=\"white\" stroke-width=\"1px\" vector-effect=\"non-scaling-stroke\" />";
+    d_wall_inner += "<rect x=\"0\" y=\"0\" width=\"" + format("{}", w_wall_width) + "\" height=\"" + format("{}", height) + "\" fill=\"none\" stroke=\"green\" stroke-width=\"1px\" vector-effect=\"non-scaling-stroke\" />";
     d_wall_inner += t_slot(0, height / 2, 90);
     d_wall_inner += t_slot(w_wall_width, height / 2, 270);
 
