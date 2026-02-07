@@ -1,9 +1,11 @@
 #include <iostream>
 #include <fstream>
+#include <sstream>
 #include <format>
 #include <string>
 #include <vector>
-#include <algorithm> // Needed for min/max
+#include <algorithm>
+#include <cmath>
 
 using namespace std;
 
@@ -11,6 +13,7 @@ const float ACRYLIC_THICKNESS = 0.125;
 const float HALF_ACRYLIC_THICKNESS = 0.0625;
 const float SCREW_RADIUS = 0.043;
 const float SCREW_DIAMETER = 0.086;
+const float PI = 3.1415926535f;
 
 string screw_hole(float x, float y) {
     // screw diameter is 0.086
@@ -72,35 +75,32 @@ std::string t_slot(float x, float y, float angle_deg) {
 std::string generate_text(string text, float x, float y, float container_w, float container_h, float rotation_deg) {
     if (text.empty()) return "";
 
-    // Determine available space based on rotation.
-    // If rotated 90 or 270, the text runs along the Y-axis (container_h).
-    // The "height" of the letters must fit within the X-axis (container_w).
+    // determine available space based on rotation
     bool is_vertical = (static_cast<int>(abs(rotation_deg)) % 180 == 90);
 
     float space_for_text_length = is_vertical ? container_h : container_w;
     float space_for_text_height = is_vertical ? container_w : container_h;
 
-    // Margins: use 80% of the parallel dimension and 60% of the perpendicular dimension
+    // Margins
     float usable_length = space_for_text_length * 0.8f;
     float usable_height = space_for_text_height * 0.6f;
     
-    // Estimate aspect ratio (width is approx 0.6 of height for standard sans-serif)
+    //estiamte aspect ratio of characters (width / height)
     float char_aspect = 0.6f; 
     
-    // 1. Scale based on string length fitting into the usable length
+    // 1. scale based on string length fitting into the usable length
     float size_by_len = usable_length / (text.length() * char_aspect);
     
-    // 2. Scale based on font height fitting into the usable height
+    // 2. scale based on font height fitting into the usable height
     float size_by_height = usable_height;
 
-    // Pick the smaller constraint to ensure it fits inside
+    // pick the smaller constraint
     float font_size = std::min(size_by_len, size_by_height);
 
-    // Caps to prevent massive or microscopic text
+    // caps to prevent massive or microscopic text
     font_size = std::min(font_size, 1.25f); 
     font_size = std::max(font_size, 0.15f);
 
-    // Generate SVG with rotation transform centered on x,y
     string text_svg = format(R"SVG(
     <text x="{0}" y="{1}" 
             transform="rotate({4} {0} {1})"
@@ -117,6 +117,100 @@ std::string generate_text(string text, float x, float y, float container_w, floa
 
     return text_svg;
 }
+
+void recursive_tree(float x, float y, float length, float angle_deg, int depth, string& svg_content) {
+    if (depth == 0) return;
+
+    //convert to radians
+    float angle_rad = angle_deg * (PI / 180.0f);
+
+    float x2 = x + length * cos(angle_rad);
+    float y2 = y + length * sin(angle_rad);
+
+    svg_content += format(R"(<line x1="{}" y1="{}" x2="{}" y2="{}" stroke="blue" stroke-width="0.02" />)", x, y, x2, y2);
+
+    //reduce length by 0.7, change angle by +/- 25 degrees
+    recursive_tree(x2, y2, length * 0.7f, angle_deg - 25, depth - 1, svg_content);
+    recursive_tree(x2, y2, length * 0.7f, angle_deg + 25, depth - 1, svg_content);
+}
+
+string generate_fractal_face(float width, float height) {
+    string fractal_svg = "";
+    recursive_tree(width / 2.0f, height * 0.9f, height * 0.25f, -90.0f, 9, fractal_svg);
+    return fractal_svg;
+}
+
+string read_svg_file(const string& filename) {
+    ifstream infile(filename);
+    if (!infile.is_open()) {
+        cerr << "Warning: Could not open " << filename << ". Logo will be missing.\n";
+        return "";
+    }
+    stringstream buffer;
+    buffer << infile.rdbuf();
+    string content = buffer.str();
+
+    size_t xml_pos = content.find("<?xml");
+    if (xml_pos != string::npos) {
+        size_t end_pos = content.find("?>", xml_pos);
+        if (end_pos != string::npos) {
+            content.erase(xml_pos, end_pos - xml_pos + 2);
+        }
+    }
+    
+    size_t doc_pos = content.find("<!DOCTYPE");
+    if (doc_pos != string::npos) {
+        size_t end_pos = content.find(">", doc_pos);
+        if (end_pos != string::npos) {
+            content.erase(doc_pos, end_pos - doc_pos + 1);
+        }
+    }
+
+    return content;
+}
+
+string generate_logo_face(float width, float height) {
+    // 1. calculate logo positioning
+    float img_w = width * 0.7f;
+    float img_h = height * 0.5f;
+    float img_x = (width - img_w) / 2.0f;
+    float img_y = height * 0.1f; 
+
+    // 2. read svg file content
+    string logo_raw_content = read_svg_file("columbia_engineering.svg");
+    
+    // 3. extract the actual viewBox
+    string logo_viewbox = "0 0 100 100"; 
+    
+    size_t vb_pos = logo_raw_content.find("viewBox=\"");
+    if (vb_pos != string::npos) {
+        size_t start = vb_pos + 9; // Skip past viewBox="
+        size_t end = logo_raw_content.find("\"", start);
+        if (end != string::npos) {
+            logo_viewbox = logo_raw_content.substr(start, end - start);
+        }
+    }
+
+    // 4. Wrapper SVG
+    string content = format(R"(
+        <svg x="{0}" y="{1}" width="{2}" height="{3}" viewBox="{4}" preserveAspectRatio="xMidYMid meet">
+            {5}
+        </svg>
+    )", img_x, img_y, img_w, img_h, logo_viewbox, logo_raw_content);
+
+    // 5. Add Text "Digital Manufacturing" below logo
+    string text = "Digital Manufacturing";
+    float text_y = height * 0.75f;
+    
+    content += format(R"(
+        <text x="{0}" y="{1}" font-family="Arial, sans-serif" font-size="{2}" text-anchor="middle" fill="blue" stroke="none">
+            {3}
+        </text>
+    )", width/2.0f, text_y, min(0.4f, width/15.0f), text);
+
+    return content;
+}
+
 
 int main(int argc, char** argv) {
     float width, length, height;
@@ -315,11 +409,12 @@ int main(int argc, char** argv) {
     l_wall.close();
 
     // ==========================================
-    // FILE 3: Width Wall
+    // FILE 3a: Width Wall FRONT (Logo + Text)
     // ==========================================
-    ofstream w_wall("w_wall.svg", ios::binary);
+    float w_wall_width = width - ACRYLIC_THICKNESS*2;
+    ofstream w_front("w_wall_front.svg", ios::binary);
 
-    string w_wall_svg = format(R"(<?xml version="1.0" encoding="UTF-8" ?>
+    string w_front_svg = format(R"(<?xml version="1.0" encoding="UTF-8" ?>
     <svg xmlns="http://www.w3.org/2000/svg" version="1.1" 
         width="{0}in" height="{1}in" viewBox="0 0 {0} {1}">
         <rect x="0" y="0" width="{0}" height="{1}"
@@ -328,21 +423,53 @@ int main(int argc, char** argv) {
             stroke-width="1px" 
             vector-effect="non-scaling-stroke"
         />
-    )", width-ACRYLIC_THICKNESS*2, height);
+    )", w_wall_width, height);
 
-    w_wall_svg += t_slot(0, height / 2, 90);
-    w_wall_svg += t_slot(width-ACRYLIC_THICKNESS*2, height / 2, 270);
+    w_front_svg += t_slot(0, height / 2, 90);
+    w_front_svg += t_slot(w_wall_width, height / 2, 270);
     
-    // for x
+    //bottom screws
     num_screws = width / 3;
     interval_inc = width / (num_screws + 1.0);
     for (int i = 0; i < num_screws; i++) {
-        w_wall_svg += t_slot(interval_inc * (i+1) - ACRYLIC_THICKNESS, height, 0);
+        w_front_svg += t_slot(interval_inc * (i+1) - ACRYLIC_THICKNESS, height, 0);
     }
-    w_wall_svg += "</svg>";
 
-    w_wall << w_wall_svg;
-    w_wall.close();
+    // logo & text
+    w_front_svg += generate_logo_face(w_wall_width, height);
+
+    w_front_svg += "</svg>";
+    w_front << w_front_svg;
+    w_front.close();
+
+    // ==========================================
+    // FILE 3b: Width Wall BACK (Fractal)
+    // ==========================================
+    ofstream w_back("w_wall_back.svg", ios::binary);
+
+    string w_back_svg = format(R"(<?xml version="1.0" encoding="UTF-8" ?>
+    <svg xmlns="http://www.w3.org/2000/svg" version="1.1" 
+        width="{0}in" height="{1}in" viewBox="0 0 {0} {1}">
+        <rect x="0" y="0" width="{0}" height="{1}"
+            fill="none" 
+            stroke="white"
+            stroke-width="1px" 
+            vector-effect="non-scaling-stroke"
+        />
+    )", w_wall_width, height);
+
+    w_back_svg += t_slot(0, height / 2, 90);
+    w_back_svg += t_slot(w_wall_width, height / 2, 270);
+    for (int i = 0; i < num_screws; i++) {
+        w_back_svg += t_slot(interval_inc * (i+1) - ACRYLIC_THICKNESS, height, 0);
+    }
+
+    // fractal
+    w_back_svg += generate_fractal_face(w_wall_width, height);
+
+    w_back_svg += "</svg>";
+    w_back << w_back_svg;
+    w_back.close();
 
     // ==========================================
     // FILE 4: Divider Wall
